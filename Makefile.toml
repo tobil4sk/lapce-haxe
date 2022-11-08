@@ -32,3 +32,25 @@ args = ["install", "--path", ".", "--debug"]
 [tasks.build-release]
 command = "cargo"
 args = ["install", "--path", "."]
+
+[tasks.install]
+script = """
+export xdg_data_dir="$HOME/.local/share"
+export plugin_dir="plugins/tobil4sk.lapce-haxe"
+
+mkdir -p ${xdg_data_dir}/lapce-stable/{{plugin_dir}}/bin
+yes | cp -i bin/lapce-haxe.wasm ${xdg_data_dir}/lapce-stable/${plugin_dir}/bin
+yes | cp -i volt.toml ${xdg_data_dir}/lapce-stable/${plugin_dir}/
+yes | cp -i server/bin/server.js ${xdg_data_dir}/lapce-stable/${plugin_dir}/
+"""
+
+[tasks.haxe-language-server-setup]
+command = "npm"
+args = ["install", "--prefix", "server"]
+
+[tasks.haxe-language-server]
+dependencies = ["haxe-language-server-setup"]
+script = """
+cd server
+npx lix run vshaxe-build --target language-server
+"""

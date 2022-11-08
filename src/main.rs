@@ -16,17 +16,21 @@ register_plugin!(State);
 fn initialize(params: InitializeParams) -> Result<()> {
     let document_selector: DocumentSelector = vec![DocumentFilter {
         // lsp language id
-        language: Some(String::from("language_id")),
+        language: Some(String::from("haxe")),
         // glob pattern
-        pattern: Some(String::from("**/*.{ext1,ext2}")),
+        pattern: Some(String::from("**/*.hx")),
         // like file:
         scheme: None,
     }];
+
+    println!("hello world");
+    PLUGIN_RPC.stderr("Hello, world plugin");
+
     let mut server_args = vec![];
 
     // Check for user specified LSP server path
     // ```
-    // [lapce-plugin-name.lsp]
+    // [lapce-haxe.lsp]
     // serverPath = "[path or filename]"
     // serverArgs = ["--arg1", "--arg2"]
     // ```
@@ -82,19 +86,40 @@ fn initialize(params: InitializeParams) -> Result<()> {
 
     // see lapce_plugin::Http for available API to download files
 
-    let _ = match VoltEnvironment::operating_system().as_deref() {
-        Ok("windows") => {
-            format!("{}.exe", "[filename]")
-        }
-        _ => "[filename]".to_string(),
-    };
+    // let _ = match VoltEnvironment::operating_system().as_deref() {
+    //     Ok("windows") => {
+    //         format!("{}.exe", "node")
+    //     }
+    //     _ => "".to_string(),
+    // };
+
+    // if you want to use server from PATH
+    let server_uri = Url::parse("urn:node")?;
 
     // Plugin working directory
     let volt_uri = VoltEnvironment::uri()?;
-    let server_uri = Url::parse(&volt_uri)?.join("[filename]")?;
+    let server_js = Url::parse(&volt_uri)?
+        .join("server.js")?
+        .to_file_path()
+        .unwrap()
+        .into_os_string()
+        .into_string()
+        .unwrap();
+    server_args.insert(0, server_js);
 
-    // if you want to use server from PATH
-    // let server_uri = Url::parse(&format!("urn:{filename}"))?;
+    PLUGIN_RPC.stderr(&format!("{}", server_uri));
+    PLUGIN_RPC.stderr(&format!(
+        "{}",
+        Url::parse(&volt_uri)?
+            .join("server.js")?
+            .to_file_path()
+            .unwrap()
+            .into_os_string()
+            .into_string()
+            .unwrap()
+    ));
+    PLUGIN_RPC.stderr(&format!("{:?}", server_args));
+    PLUGIN_RPC.stderr(&format!("{:?}", params.initialization_options));
 
     // Available language IDs
     // https://github.com/lapce/lapce/blob/HEAD/lapce-proxy/src/buffer.rs#L173
@@ -104,6 +129,7 @@ fn initialize(params: InitializeParams) -> Result<()> {
         document_selector,
         params.initialization_options,
     );
+    PLUGIN_RPC.stderr("after");
 
     Ok(())
 }

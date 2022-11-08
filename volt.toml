@@ -1,13 +1,13 @@
-name = "<plugin-name>"
+name = "lapce-haxe"
 version = "0.0.0"
-author = "<your name>"
-display-name = "<plugin-display-name>"
-description = "<plugin-description>"
-wasm = "bin/<plugin-name>.wasm"
+author = "tobil4sk"
+display-name = "Haxe"
+description = "Haxe LSP support"
+wasm = "bin/lapce-haxe.wasm"
 
 [activation]
-language = []
-workspace-contains = []
+language = ["haxe"]
+workspace-contains = ["*.hxml"]
 
 [config."volt.serverPath"]
 default = ""
