@@ -23,7 +23,6 @@ fn initialize(params: InitializeParams) -> Result<()> {
         scheme: None,
     }];
 
-    println!("hello world");
     PLUGIN_RPC.stderr("Hello, world plugin");
 
     let mut server_args = vec![];
